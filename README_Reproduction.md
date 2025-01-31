@@ -161,4 +161,3 @@ PERF_FILE=${MODEL_ARCH}_${MODALITY_TYPE}_${PREDICT}_eval.csv
 
 ## Acknowledgment and Citation
 
-WAT HIER?
