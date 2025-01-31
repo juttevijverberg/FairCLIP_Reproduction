@@ -1,0 +1,46 @@
+#!/bin/bash
+#SBATCH --partition=gpu_a100
+#SBATCH --gpus=1
+#SBATCH --job-name=linprobe
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=9
+#SBATCH --time=10:00:00
+#SBATCH --output=slurm_output_%A.out
+
+cd ./mae
+DATA_DIR= path/to/dataset # Change to correct path to dataset
+FEATS_TYPE=image # [image, multimodal]
+PRETRAIN_CHKPT= #Add path to finetuned model. Leave empty for natural checkpoints 
+EXP_NAME=../linprobe_results
+MODEL_TYPE=clip
+EPOCHS=1000
+WEIGHT_DECAY=0.0
+BLR=0.1
+SEED=42
+
+module purge
+module load 2023
+module load Anaconda3/2023.07-2
+
+source activate fairclip
+
+OMP_NUM_THREADS=1
+python -m torch.distributed.launch --master_port=29501 --nproc_per_node=1 main_linprobe.py \
+		--seed ${SEED} \
+		--model_type ${MODEL_TYPE} \
+		--vl_feats_type ${FEATS_TYPE} \
+		--blip_feats_select avgpool \
+		--cfg-path ../LAVIS/lavis/projects/blip2/train/pretrain_stage1.yaml \
+		--vision_encoder_weights clip \
+		--summary_type gpt-4 \
+		--batch_size 512 \
+		--model vit_large_patch16 \
+		--cls_token \
+		--finetune ${PRETRAIN_CHKPT} \
+		--epochs ${EPOCHS} \
+		--blr ${BLR} \
+		--weight_decay ${WEIGHT_DECAY} \
+		--data_path ${DATA_DIR} \
+		--output_dir $EXP_NAME \
+		--log_dir $EXP_NAME \
+		--nb_classes 2 > ${EXP_NAME}.out

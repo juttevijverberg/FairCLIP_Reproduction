@@ -1,0 +1,36 @@
+#!/bin/bash
+#SBATCH --partition=gpu_a100
+#SBATCH --gpus=1
+#SBATCH --job-name=finetune_CLIP
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=9
+#SBATCH --time=04:00:00
+#SBATCH --output=slurm_output_%A.out
+
+DATASET_DIR=/path/to/dataset
+RESULT_DIR=./finetune_results
+MODEL_ARCH=vit-l14 # Options: vit-b16 | vit-l14
+NUM_EPOCH=10
+MODALITY_TYPE='slo_fundus'
+SUMMARIZED_NOTE_FILE=gpt4_summarized_notes.csv
+LR=1e-5
+BATCH_SIZE=32
+SEED=42
+
+PERF_FILE=${MODEL_ARCH}_${MODALITY_TYPE}.csv
+
+module purge
+module load 2023
+module load Anaconda3/2023.07-2
+source activate fairclip
+
+python ./FairCLIP/finetune_CLIP.py \
+		--dataset_dir ${DATASET_DIR} \
+		--result_dir ${RESULT_DIR}/glaucoma_CLIP_${MODEL_ARCH} \
+		--lr ${LR} \
+		--batch_size ${BATCH_SIZE} \
+		--perf_file ${PERF_FILE} \
+		--model_arch ${MODEL_ARCH} \
+		--summarized_note_file ${SUMMARIZED_NOTE_FILE} \
+		--seed ${SEED} \
+		--num_epochs ${NUM_EPOCH}

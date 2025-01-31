@@ -1,0 +1,35 @@
+#!/bin/bash
+#SBATCH --partition=gpu_a100
+#SBATCH --gpus=1
+#SBATCH --job-name=evaluate_CLIP
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=9
+#SBATCH --time=00:20:00
+#SBATCH --output=slurm_output_%A.out
+
+DATASET_DIR=path/to/dataset #Change to dataset path
+RESULT_DIR=./zeroshot_results
+MODEL_ARCH=vit-b16  # Options: vit-b16 | vit-l14
+MODALITY_TYPE='slo_fundus'
+LR=1e-5
+BATCH_SIZE=32
+PREDICT='glaucoma' # Prediction of the model. Options: 'glaucoma' | 'race' | 'gender' | 'ethnicity' | 'language'
+PRETRAINED_WEIGHTS= path/to/pretrained/weights #Add path to pretrained weights
+PERF_FILE=${MODEL_ARCH}_${MODALITY_TYPE}_${PREDICT}_eval.csv
+CLIP_TYPE=FairCLIP # Options: CLIP | FairCLIP
+SEED=42
+
+module purge
+module load 2023
+module load Anaconda3/2023.07-2
+source activate fairclip
+
+python ./FairCLIP/evaluate_CLIP.py \
+		--dataset_dir ${DATASET_DIR} \
+		--result_dir ${RESULT_DIR}/glaucoma_${CLIP_TYPE}_${MODEL_ARCH}_${PREDICT} \
+		--lr ${LR} \
+		--perf_file ${PERF_FILE} \
+		--model_arch ${MODEL_ARCH} \
+		--seed ${SEED} \
+		--pretrained_weights ${PRETRAINED_WEIGHTS} \
+		--predict ${PREDICT}
