@@ -9,8 +9,22 @@
 
 ## Abstract
 
-TO ADD
-
+Fairness is a crucial consideration in medical deep learning, as model bias can lead to dis-
+parities in diagnoses and treatment decisions. Luo et al. (2024a) conducted a comprehensive
+fairness analysis of two vision-language models, CLIP and BLIP2, revealing significant bias
+in their predictions. The authors introduced FairCLIP, a model that mitigates bias and
+achieves a better performance-fairness trade-off. In this work, we aim to (1) reproduce the
+key findings of Luo et al. (2024a) and (2) extend their analysis with additional evaluations.
+Our results confirm that most of the reported findings are reproducible, although we identify
+discrepancies in specific cases. Furthermore, we conduct a more extensive fairness analysis
+by incorporating two additional metrics: Precision Disparity and Mean Absolute Deviation.
+Following this analysis, we confirm the presence of bias in CLIP. However, despite being
+able to reproduce most of the results, we challenge the claim that FairCLIP improves fair-
+ness. Our results suggest that improvements of FairCLIP over CLIP are inconsistent and
+architecture- or attribute-dependent, rather than a generalizable improvement in fairness.
+Finally, we conduct a study to identify the source of bias. Our results indicate that the
+bias does not originate from the summarized clinical notes, attribute identification, medical
+pre-training, or group imbalance.
 
 ## Installation
 
